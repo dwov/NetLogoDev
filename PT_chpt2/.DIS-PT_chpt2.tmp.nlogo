@@ -86,7 +86,8 @@ globals [
 
 ;---- General agent variables
 turtles-own [
-  ;speed
+  ;next-task
+ ; steps
 
 ]
 
@@ -98,11 +99,13 @@ patches-own [
 
 ;---- Specific, local variables of citizen-agents
 citizens-own [
-  ;citizen-vision is set by ruler 'citizen-vision'
+  ;citizen-vision;is set by ruler 'citizen-vision'
+  next-task
   inPrison?
   jailtime
   jailsentence
-  inResturant?
+  steps
+  speed
 ]
 ;---- Specific, local variables of cop-agents
 cops-own [
@@ -111,17 +114,12 @@ cops-own [
   inResturant?
 ]
 
-
-
-
 ; ******************* SETUP PART *****************
 ; setup of the environment, and the different agents
 to setup
   clear-all
   ; define global variables that are not set as sliders
   set max-jailterm 50
-
-
 
 
   ; setup of the environment:
@@ -162,7 +160,10 @@ to setup
     set inPrison? false
     set jailtime 0
     set jailsentence 0
-    ;set speed random 5 + 1 ; make sure it cannot be 0
+
+    set speed random 5 + 1 ; make sure it cannot be 0
+    set citizen-vision random 9 + 1
+    set next-task [ -> walkaround ]
   ]
 
   ;---- setup cops
@@ -213,6 +214,7 @@ to go
   ask turtles [
     ; Reactive part based on the type of agent
     if (breed = citizens) [
+
       citizen_behavior ; code as defined in the include-file "citizens.nls"
 
       ]
@@ -228,6 +230,7 @@ to go
   ]
 
 end ; - to go part
+
 
 
 to moving-around-freely
@@ -367,6 +370,7 @@ HORIZONTAL
 
 SLIDER
 156
+
 398
 248
 431
@@ -389,6 +393,7 @@ cop-vision
 cop-vision
 1
 10
+
 3.0
 0.1
 1

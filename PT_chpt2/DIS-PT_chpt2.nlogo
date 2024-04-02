@@ -78,6 +78,7 @@ breed [citizens citizen]  ;
 breed [cops cop] ;
 
 globals [
+  citizen-vision
   max-jailterm
   hunger
   resturant-region
@@ -86,8 +87,8 @@ globals [
 
 ;---- General agent variables
 turtles-own [
-  ;speed
-
+  ;next-task
+ ; steps
 ]
 
 ;---- Specific, local variables of patches
@@ -98,11 +99,13 @@ patches-own [
 
 ;---- Specific, local variables of citizen-agents
 citizens-own [
-  ;citizen-vision is set by ruler 'citizen-vision'
+  ;citizen-vision;is set by ruler 'citizen-vision'
+  next-task
   inPrison?
   jailtime
   jailsentence
-  inResturant?
+  steps
+  speed
 ]
 ;---- Specific, local variables of cop-agents
 cops-own [
@@ -110,8 +113,6 @@ cops-own [
   cop-speed
   inResturant?
 ]
-
-
 
 
 ; ******************* SETUP PART *****************
@@ -162,7 +163,9 @@ to setup
     set inPrison? false
     set jailtime 0
     set jailsentence 0
-    ;set speed random 5 + 1 ; make sure it cannot be 0
+    set speed random 5 + 1 ; make sure it cannot be 0
+    set citizen-vision random 9 + 1 ; 1 - 10
+    set next-task [ -> walkaround ]
   ]
 
   ;---- setup cops
@@ -213,8 +216,7 @@ to go
   ask turtles [
     ; Reactive part based on the type of agent
     if (breed = citizens) [
-      citizen_behavior ; code as defined in the include-file "citizens.nls"
-
+      citizen_behavior
       ]
     if (breed = cops) [
       cop_behavior ; code as defined in the include-file "cops.nls"
@@ -359,23 +361,8 @@ num-cops
 num-cops
 0
 50
-1.0
+5.0
 1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-156
-398
-248
-431
-citizen-vision
-citizen-vision
-1
-10
-5.4
-0.1
 1
 NIL
 HORIZONTAL
@@ -389,7 +376,7 @@ cop-vision
 cop-vision
 1
 10
-3.0
+3.2
 0.1
 1
 NIL
