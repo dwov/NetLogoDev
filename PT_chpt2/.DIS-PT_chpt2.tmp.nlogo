@@ -144,9 +144,9 @@ to setup
   let resturantpatches patches with [pxcor > 55 and pxcor < 65 and pycor > 20 and pycor < 30]
   ask resturantpatches [
     set pcolor brown
-    set region "resturant"
+    set region "restaurant"
   ]
-  ask one-of resturantpatches [set plabel "RESTURANT"]
+  ask one-of resturantpatches [set plabel "RESTAURANT"]
 
 
   ; setup citizen-agents
@@ -173,7 +173,7 @@ to setup
     set color blue
     set cop-speed random 3 + 1 ; make sure it cannot be 0
     move-to one-of patches with [ not any? turtles-here and region != "prison"]
-    set hunger random 20
+    set hunger random 20 + 3
     set inResturant? false
   ]
 
@@ -204,7 +204,7 @@ to go
 
 
   ask turtles [
-    if (breed = cops and hunger <= 3) [set next-task [-> gotoresturant]]]
+    if (breed = cops and hunger <= 3) [gotoresturant]]
 
 
   ;---- Agents to-go part -------------
@@ -310,7 +310,7 @@ num-citizens
 num-citizens
 1
 30
-1.0
+24.0
 1
 1
 NIL
@@ -359,7 +359,7 @@ num-cops
 num-cops
 0
 50
-4.0
+5.0
 1
 1
 NIL
@@ -374,7 +374,7 @@ citizen-vision
 citizen-vision
 1
 10
-3.0
+5.1
 0.1
 1
 NIL
@@ -476,6 +476,24 @@ _______________________________________
 11
 0.0
 1
+
+PLOT
+151
+38
+351
+188
+Hunger value
+time
+hunger
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot count hunger"
 
 @#$#@#$#@
 ## WHAT IS IT?
