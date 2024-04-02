@@ -121,6 +121,7 @@ to setup
   clear-all
   ; define global variables that are not set as sliders
   set max-jailterm 50
+  set citizen-vision random 9 + 1
 
   ; setup of the environment:
   ; setup of all patches
@@ -144,7 +145,13 @@ to setup
     set pcolor brown
     set region "restaurant"
   ]
-  ask one-of resturantpatches [set plabel "RESTAURANT"]
+  ask one-of resturantpatches [
+  set plabel "RESTAURANT"
+ ; set label-color white  ; Ange färgen på etiketten (t.ex. vit)
+  ;set label-size 2      ; Ange storleken på etiketten
+ ; setxy  xcor ycor  ; Centrera etiketten på x-koordinaten för rutan
+ ; setxy ycor   ; Centrera etiketten på y-koordinaten för rutan
+]
 
 
   ; setup citizen-agents
@@ -161,7 +168,6 @@ to setup
     set jailtime 0
     set jailsentence 0
     set speed random 5 + 1 ; make sure it cannot be 0
-  ;  set citizen-vision random 9 + 1 ; 1 - 10
     set next-task [ -> walkaround ]
   ]
 
@@ -351,7 +357,7 @@ num-cops
 num-cops
 0
 50
-5.0
+6.0
 1
 1
 NIL

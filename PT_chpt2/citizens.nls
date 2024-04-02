@@ -19,7 +19,6 @@ end
 
 to walkaround     
   forward speed
-  ;set steps 5
   let places neighborhood with [not any? cops-here and region != "prison"]
     set inPrison?  false
     set color green
@@ -40,7 +39,6 @@ end
 
 
 to see-police
-  set color pink
   ifelse jailsentence > 0 [
     set next-task [ -> go-to-prison]
   ]
@@ -57,7 +55,6 @@ end
 
 
 to go-to-prison
-  ;set steps 5
    move-to one-of patches with [not any? turtles-here and region = "prison"]
    set color red
    set inPrison?  true
@@ -65,6 +62,7 @@ to go-to-prison
    print (word "citizen " who " is in prison since: " jailtime)
    if jailtime > jailsentence [    ; released from prison
     set jailtime 0
+    set jailsentence 0
     let places neighborhood with [not any? cops-here and region != "prison"]
     if any? places [move-to one-of places]
     set inPrison? false
