@@ -17,7 +17,8 @@ to cop_behavior
         print (word " cop-agent: " who " puts suspect: " suspect " to prison!")
         ask suspect [
            set jailsentence random max-jailterm
-        ;   go-to-prison
+      go-to-prison
+      if hunger <= 4 [gotoresturant]
         ]
     ]
     [; else look for citizens and move towards them
@@ -30,3 +31,11 @@ to cop_behavior
   ]
 end
 
+to gotoresturant
+  ; set flag
+  set inResturant? true
+  set color pink
+  ; move to prison into an own cell (=own patch)
+  move-to one-of patches with [not any? turtles-here and region = "restaurant"]
+  set hunger random 20 + 3
+end

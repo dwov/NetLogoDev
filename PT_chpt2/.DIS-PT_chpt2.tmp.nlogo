@@ -78,8 +78,10 @@ breed [citizens citizen]  ;
 breed [cops cop] ;
 
 globals [
-  citizen-vision
   max-jailterm
+  hunger
+  resturant-region
+  next-task
 ]
 
 ;---- General agent variables
@@ -104,14 +106,13 @@ citizens-own [
   jailsentence
   steps
   speed
-
 ]
 ;---- Specific, local variables of cop-agents
 cops-own [
   ;cop-vision is set by slider
   cop-speed
+  inResturant?
 ]
-
 
 ; ******************* SETUP PART *****************
 ; setup of the environment, and the different agents
@@ -137,6 +138,14 @@ to setup
     ]
     ask one-of prisonpatches [set plabel "PRISON"]
 
+  ;setup resturant
+  let resturantpatches patches with [pxcor > 55 and pxcor < 65 and pycor > 20 and pycor < 30]
+  ask resturantpatches [
+    set pcolor brown
+    set region "restaurant"
+  ]
+  ask one-of resturantpatches [set plabel "RESTAURANT"]
+
 
   ; setup citizen-agents
   create-citizens num-citizens [
@@ -151,6 +160,7 @@ to setup
     set inPrison? false
     set jailtime 0
     set jailsentence 0
+
     set speed random 5 + 1 ; make sure it cannot be 0
     set citizen-vision random 9 + 1
     set next-task [ -> walkaround ]
@@ -164,6 +174,8 @@ to setup
     set color blue
     set cop-speed random 3 + 1 ; make sure it cannot be 0
     move-to one-of patches with [ not any? turtles-here and region != "prison"]
+    set hunger random 20 + 3
+    set inResturant? false
   ]
 
 
@@ -188,6 +200,12 @@ to go
   ;---- Basic functions, like setting the time
   ;
   tick ;- update time
+  set hunger hunger - 1
+
+
+
+  ask turtles [
+    if (breed = cops and hunger <= 3) [gotoresturant]]
 
 
   ;---- Agents to-go part -------------
@@ -196,7 +214,9 @@ to go
   ask turtles [
     ; Reactive part based on the type of agent
     if (breed = citizens) [
-         citizen_behavior
+
+      citizen_behavior ; code as defined in the include-file "citizens.nls"
+
       ]
     if (breed = cops) [
       cop_behavior ; code as defined in the include-file "cops.nls"
@@ -210,6 +230,52 @@ to go
   ]
 
 end ; - to go part
+
+
+
+to moving-around-freely
+    ; checking if the citizen is in prison
+ifelse inPrison? = true [
+    set jailtime jailtime + 1 ;counting the time in prison
+    print (word "citizen " who "is in prison since: " jailtime)
+    if jailtime > jailsentence [; released from prison
+      set jailtime 0
+      ; move forward where there are no cops and is not prison
+      let places neighborhood with [not any? cops-here and region != "prison"]
+      if any? places [move-to one-of places]
+      set inPrison? false
+      set color yellow
+      print (word "citizen " who "is released from prison")
+
+    ]
+  ]
+  [;else checking if cops are within vision radius
+    let nearby-police other cops in-radius citizen-vision
+    if any? nearby-police [
+      let police min-one-of nearby-police [distance myself]; identify the cop that is nearest
+      if police != nobody [
+        print (word " citizen: " who " sees cop: " police)
+        set heading (towards police) + 180 ; face opposite from the nearest police
+      ]
+    ]
+    ; move forward where there are no cops and is not prison
+    let places neighborhood with [not any? cops-here and region != "prison"]
+    if any? places [move-to one-of places]
+  ]
+end
+
+to running-away-from-cops
+end
+
+to being-arrested-and-put-to-prison
+end
+
+to in-prison
+end
+
+
+
+
 @#$#@#$#@
 GRAPHICS-WINDOW
 549
@@ -304,6 +370,22 @@ HORIZONTAL
 
 SLIDER
 156
+
+398
+248
+431
+citizen-vision
+citizen-vision
+1
+10
+5.1
+0.1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+156
 436
 248
 469
@@ -311,7 +393,8 @@ cop-vision
 cop-vision
 1
 10
-3.2
+
+3.0
 0.1
 1
 NIL
@@ -398,6 +481,24 @@ _______________________________________
 11
 0.0
 1
+
+PLOT
+151
+38
+351
+188
+Hunger value
+time
+hunger
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot count hunger"
 
 @#$#@#$#@
 ## WHAT IS IT?
