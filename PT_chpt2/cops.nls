@@ -38,6 +38,6 @@ to gotoresturant
   set inResturant? true
   set color pink
   ; move to prison into an own cell (=own patch)
-  move-to one-of patches with [not any? turtles-here and region = "resturant"]
-  set hunger random 20
+  move-to one-of patches with [not any? turtles-here and region = "restaurant"]
+  set hunger random 20 + 3
 end
