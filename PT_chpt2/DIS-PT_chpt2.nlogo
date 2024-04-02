@@ -81,6 +81,7 @@ globals [
 
   max-jailterm
   resturant-region
+  patch-steps
  ; next-task
 ]
 
@@ -122,7 +123,7 @@ to setup
   clear-all
   ; define global variables that are not set as sliders
   set max-jailterm 50
-  set citizen-vision random 9 + 1
+ set patch-steps 5
 
   ; setup of the environment:
   ; setup of all patches
@@ -130,7 +131,7 @@ to setup
     ; make background a certain color or leave it black
     ;set pcolor white - 1
     ; cache patch neighborhoods
-    set neighborhood patches in-radius citizen-vision
+    set neighborhood patches in-radius patch-steps
   ]
   ; setup prison
   let prisonpatches patches with [ pxcor >= -5 and pxcor <= 20 and pycor >= -5 and pycor <= 15 ]
@@ -163,6 +164,7 @@ to setup
     set jailtime 0
     set jailsentence 0
     set speed random 5 + 1 ; make sure it cannot be 0
+    set citizen-vision random 9 + 1
     set next-task [ -> walkaround ]
   ]
 
@@ -174,7 +176,7 @@ to setup
     set color blue
     set cop-speed random 3 + 1 ; make sure it cannot be 0
     move-to one-of patches with [ not any? turtles-here and region != "prison"]
-    set hunger random 20 + 10
+    set hunger random 30 + 3
     ;set inResturant? false
   ]
 
@@ -228,7 +230,6 @@ end ; - to go part
 
 
 
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 549
@@ -266,7 +267,7 @@ num-citizens
 num-citizens
 1
 30
-15.0
+17.0
 1
 1
 NIL
@@ -315,7 +316,7 @@ num-cops
 num-cops
 0
 50
-14.0
+8.0
 1
 1
 NIL
@@ -417,25 +418,6 @@ _______________________________________
 11
 0.0
 1
-
-PLOT
-151
-38
-351
-188
-Hunger value
-time
-hunger
-0.0
-10.0
-0.0
-10.0
-true
-false
-"" ""
-PENS
-"default" 1.0 0 -16777216 true "" "plot hunger"
-"pen-1" 1.0 0 -7500403 true "" ""
 
 @#$#@#$#@
 ## WHAT IS IT?

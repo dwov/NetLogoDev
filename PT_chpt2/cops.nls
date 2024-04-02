@@ -11,8 +11,7 @@
 
 to cop_behavior
   ; check if citizen is nearby to arrest
-  print (word " hunger: " hunger)
-  
+   
   let suspect one-of citizens-here with [inPrison? = false] ; need to make sure the citizen is not in jail, otherwise can the cop be trapped besides
     ifelse suspect != nobody [
         ; move the citizen to prison and mark them as arrested
