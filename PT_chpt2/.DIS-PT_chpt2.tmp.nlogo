@@ -359,7 +359,7 @@ num-cops
 num-cops
 0
 50
-1.0
+5.0
 1
 1
 NIL
@@ -374,7 +374,7 @@ citizen-vision
 citizen-vision
 1
 10
-5.4
+5.1
 0.1
 1
 NIL
@@ -493,7 +493,7 @@ true
 false
 "" ""
 PENS
-"default" 1.0 0 -16777216 true "" "plot hunger"
+"default" 1.0 0 -16777216 true "" "plot count hunger"
 
 @#$#@#$#@
 ## WHAT IS IT?
