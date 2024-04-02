@@ -78,13 +78,15 @@ breed [citizens citizen]  ;
 breed [cops cop] ;
 
 globals [
-  ;
+
   max-jailterm
 ]
 
 ;---- General agent variables
 turtles-own [
-  ;speed
+  ;next-task
+ ; steps
+
 ]
 
 ;---- Specific, local variables of patches
@@ -95,11 +97,13 @@ patches-own [
 
 ;---- Specific, local variables of citizen-agents
 citizens-own [
-  ;citizen-vision is set by ruler 'citizen-vision'
+  ;citizen-vision;is set by ruler 'citizen-vision'
   next-task
   inPrison?
   jailtime
   jailsentence
+  steps
+  speed
 
 ]
 ;---- Specific, local variables of cop-agents
@@ -114,7 +118,7 @@ cops-own [
 to setup
   clear-all
   ; define global variables that are not set as sliders
-  set max-jailterm 50
+  set max-jailterm
 
 
   ; setup of the environment:
@@ -144,11 +148,11 @@ to setup
     ; make sure the agents are not placed in prison already during setup:
     move-to one-of patches with [ not any? turtles-here and region != "prison"]
     ; setting specific variables for citizen
-  ;  set inPrison? false
+    set inPrison? false
     set jailtime 0
     set jailsentence 0
-
-    ;set speed random 5 + 1 ; make sure it cannot be 0
+    set speed random 5 + 1 ; make sure it cannot be 0
+    set next-task [ -> walkaround ]
   ]
 
   ;---- setup cops
@@ -191,7 +195,9 @@ to go
   ask turtles [
     ; Reactive part based on the type of agent
     if (breed = citizens) [
-      citizen_behavior ; code as defined in the include-file "citizens.nls"
+         citizen_behavior
+
+      ;citizen_behavior ; code as defined in the include-file "citizens.nls"
       ]
     if (breed = cops) [
       cop_behavior ; code as defined in the include-file "cops.nls"
@@ -242,7 +248,7 @@ num-citizens
 num-citizens
 1
 30
-19.0
+18.0
 1
 1
 NIL
@@ -291,7 +297,7 @@ num-cops
 num-cops
 0
 50
-4.0
+18.0
 1
 1
 NIL
@@ -306,7 +312,7 @@ citizen-vision
 citizen-vision
 1
 10
-3.0
+3.2
 0.1
 1
 NIL
@@ -321,7 +327,7 @@ cop-vision
 cop-vision
 1
 10
-3.0
+7.5
 0.1
 1
 NIL
