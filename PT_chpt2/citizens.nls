@@ -13,11 +13,11 @@ to citizen_behavior
          ifelse steps > 0
         [ set steps steps - 1 ]
         [  
-         run next-task]
-  
+         run next-task]  
 end
 
-to walkaround  
+
+to walkaround     
   forward speed
   ;set steps 5
   let places neighborhood with [not any? cops-here and region != "prison"]
@@ -36,7 +36,6 @@ to walkaround
      ] 
     ]
   ]
-
 end
 
 
@@ -53,8 +52,7 @@ to see-police
       set heading (towards police) + 180 ; face opposite from the nearest police    
    ]     
   set next-task [ -> walkaround ]
-  ]
-      
+  ]      
 end
 
 

@@ -78,7 +78,7 @@ breed [citizens citizen]  ;
 breed [cops cop] ;
 
 globals [
-
+  citizen-vision
   max-jailterm
 ]
 
@@ -152,6 +152,7 @@ to setup
     set jailtime 0
     set jailsentence 0
     set speed random 5 + 1 ; make sure it cannot be 0
+    set citizen-vision random 9 + 1 ; 1 - 10
     set next-task [ -> walkaround ]
   ]
 
@@ -196,8 +197,6 @@ to go
     ; Reactive part based on the type of agent
     if (breed = citizens) [
          citizen_behavior
-
-      ;citizen_behavior ; code as defined in the include-file "citizens.nls"
       ]
     if (breed = cops) [
       cop_behavior ; code as defined in the include-file "cops.nls"
@@ -248,7 +247,7 @@ num-citizens
 num-citizens
 1
 30
-18.0
+24.0
 1
 1
 NIL
@@ -297,23 +296,8 @@ num-cops
 num-cops
 0
 50
-18.0
+5.0
 1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-156
-398
-248
-431
-citizen-vision
-citizen-vision
-1
-10
-3.2
-0.1
 1
 NIL
 HORIZONTAL
@@ -327,7 +311,7 @@ cop-vision
 cop-vision
 1
 10
-7.5
+3.2
 0.1
 1
 NIL
