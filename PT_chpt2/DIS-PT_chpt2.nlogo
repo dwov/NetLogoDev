@@ -78,11 +78,10 @@ breed [citizens citizen]  ;
 breed [cops cop] ;
 
 globals [
-  citizen-vision
+
   max-jailterm
-  hunger
   resturant-region
-  next-task
+ ; next-task
 ]
 
 ;---- General agent variables
@@ -100,17 +99,19 @@ patches-own [
 ;---- Specific, local variables of citizen-agents
 citizens-own [
   ;citizen-vision;is set by ruler 'citizen-vision'
-
+  citizen-vision
   inPrison?
   jailtime
   jailsentence
-  steps
   speed
+  steps
+  next-task
 ]
 ;---- Specific, local variables of cop-agents
 cops-own [
   ;cop-vision is set by slider
   cop-speed
+  hunger
   ;inResturant?
 ]
 
@@ -145,13 +146,7 @@ to setup
     set pcolor brown
     set region "restaurant"
   ]
-  ask one-of resturantpatches [
-  set plabel "RESTAURANT"
- ; set label-color white  ; Ange färgen på etiketten (t.ex. vit)
-  ;set label-size 2      ; Ange storleken på etiketten
- ; setxy  xcor ycor  ; Centrera etiketten på x-koordinaten för rutan
- ; setxy ycor   ; Centrera etiketten på y-koordinaten för rutan
-]
+  ask one-of resturantpatches [ set plabel "RESTAURANT"]
 
 
   ; setup citizen-agents
@@ -179,7 +174,7 @@ to setup
     set color blue
     set cop-speed random 3 + 1 ; make sure it cannot be 0
     move-to one-of patches with [ not any? turtles-here and region != "prison"]
-    set hunger random 20 + 3
+    set hunger random 20 + 10
     ;set inResturant? false
   ]
 
@@ -205,10 +200,10 @@ to go
   ;---- Basic functions, like setting the time
   ;
   tick ;- update time
-  set hunger hunger - 1
 
-  ask turtles [
-    if (breed = cops and hunger <= 3) [gotoresturant]]
+
+ ; ask turtles [
+    ;if (breed = cops and hunger <= 3) [gotoresturant]]
 
   ;---- Agents to-go part -------------
   ; Cyclic execution of what the agents are supposed to do
@@ -232,45 +227,8 @@ to go
 end ; - to go part
 
 
-to moving-around-freely
-    ; checking if the citizen is in prison
-ifelse inPrison? = true [
-    set jailtime jailtime + 1 ;counting the time in prison
-    print (word "citizen " who "is in prison since: " jailtime)
-    if jailtime > jailsentence [; released from prison
-      set jailtime 0
-      ; move forward where there are no cops and is not prison
-      let places neighborhood with [not any? cops-here and region != "prison"]
-      if any? places [move-to one-of places]
-      set inPrison? false
-      set color yellow
-      print (word "citizen " who "is released from prison")
 
-    ]
-  ]
-  [;else checking if cops are within vision radius
-    let nearby-police other cops in-radius citizen-vision
-    if any? nearby-police [
-      let police min-one-of nearby-police [distance myself]; identify the cop that is nearest
-      if police != nobody [
-        print (word " citizen: " who " sees cop: " police)
-        set heading (towards police) + 180 ; face opposite from the nearest police
-      ]
-    ]
-    ; move forward where there are no cops and is not prison
-    let places neighborhood with [not any? cops-here and region != "prison"]
-    if any? places [move-to one-of places]
-  ]
-end
 
-to running-away-from-cops
-end
-
-to being-arrested-and-put-to-prison
-end
-
-to in-prison
-end
 @#$#@#$#@
 GRAPHICS-WINDOW
 549
@@ -308,7 +266,7 @@ num-citizens
 num-citizens
 1
 30
-24.0
+15.0
 1
 1
 NIL
@@ -357,7 +315,7 @@ num-cops
 num-cops
 0
 50
-6.0
+14.0
 1
 1
 NIL
@@ -477,6 +435,7 @@ false
 "" ""
 PENS
 "default" 1.0 0 -16777216 true "" "plot hunger"
+"pen-1" 1.0 0 -7500403 true "" ""
 
 @#$#@#$#@
 ## WHAT IS IT?

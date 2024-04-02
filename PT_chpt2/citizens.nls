@@ -10,8 +10,8 @@
 
 to citizen_behavior
          
-         ifelse steps > 0
-        [ set steps steps - 1 ]
+        ; ifelse steps > 0
+      ;  [ set steps steps - 1 ]
         [  
          run next-task]  
 end
