@@ -100,7 +100,7 @@ patches-own [
 ;---- Specific, local variables of citizen-agents
 citizens-own [
   ;citizen-vision;is set by ruler 'citizen-vision'
-  next-task
+
   inPrison?
   jailtime
   jailsentence
@@ -111,7 +111,7 @@ citizens-own [
 cops-own [
   ;cop-vision is set by slider
   cop-speed
-  inResturant?
+  ;inResturant?
 ]
 
 
@@ -177,7 +177,7 @@ to setup
     set cop-speed random 3 + 1 ; make sure it cannot be 0
     move-to one-of patches with [ not any? turtles-here and region != "prison"]
     set hunger random 20 + 3
-    set inResturant? false
+    ;set inResturant? false
   ]
 
 
@@ -271,9 +271,6 @@ end
 
 to in-prison
 end
-
-
-
 
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -376,7 +373,7 @@ cop-vision
 cop-vision
 1
 10
-3.2
+3.0
 0.1
 1
 NIL
