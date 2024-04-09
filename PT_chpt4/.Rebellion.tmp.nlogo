@@ -64,14 +64,13 @@ end
 to go
 
  ask agents [
-    move
    ifelse jail-term > 0
     [ set jail-term jail-term - 1 ]
      [ set grievance (perceived-hardship * (1 - government-legitimacy))
       let c count cops-on neighborhood
       let a 1 + count (agents-on neighborhood) with [ active? ]
       set estimated-arrest-probability (1 - exp (- k * floor (c / a)))
-
+      m
     ]
   ]
 
