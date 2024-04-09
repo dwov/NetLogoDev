@@ -120,17 +120,11 @@ to execute-action
   ; Execute chosen action based on deliberation
   if active? [
     ; If agent has decided to become active, set active? to true
-    ; (This may involve additional actions depending on the simulation)
-    ; For example, if the agent is not already in jail, it may start rebelling
     if jail-term = 0 [  ; Only start rebelling if not already in jail
-      ; Additional actions for rebellion (if applicable)
-      ; Example: start rebelling by setting active? to true and updating display
       set active? true
     ]
   ]
 end
-
-; Other procedures (move, display-agent, display-cop, etc.) remain unchanged
 
 
 ; AGENT AND COP BEHAVIOR
