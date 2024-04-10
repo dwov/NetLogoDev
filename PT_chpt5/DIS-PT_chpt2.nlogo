@@ -62,6 +62,7 @@ __includes [
     "citizens.nls"
     "cops.nls"
     "vid.nls" ; contains the code for the recorder. You also need to activate the vid-extension and the command at the end of setup
+    "bdi.nls"
 ]
 ; ********************end included files ********
 
@@ -83,12 +84,15 @@ globals [
   resturant-region
   patch-steps
  ; next-task
+
 ]
 
 ;---- General agent variables
 turtles-own [
   ;next-task
  ; steps
+  beliefs
+
 ]
 
 ;---- Specific, local variables of patches
@@ -107,6 +111,7 @@ citizens-own [
   speed
   steps
   next-task
+  intentions
 ]
 ;---- Specific, local variables of cop-agents
 cops-own [
@@ -115,6 +120,7 @@ cops-own [
   hunger
   ;inResturant?
 ]
+
 
 
 ; ******************* SETUP PART *****************
@@ -154,6 +160,8 @@ to setup
   create-citizens num-citizens [
     set label who
     set shape "person"
+        set intentions []
+    add-intention "walkaround" "false"
     set size 1.5
     set color green
     setxy random-xcor random-ycor
@@ -190,7 +198,16 @@ to setup
     if Source = "With Interface" [vid:record-interface] ; records the interface
   ]
 
+
+ ; ask turtles [
+ ; add-intention "walkaround" "false"
+;  ]
+
 end
+
+
+
+
 
 ; **************************end setup part *******
 
@@ -203,10 +220,18 @@ to go
   ;
   tick ;- update time
 
+   ask turtles [
+
+  ]
+
   ask turtles [
     ; Reactive part based on the type of agent
     if (breed = citizens) [
-      citizen_behavior
+      ;citizen_behavior
+      execute-intentions
+
+
+
       ]
     if (breed = cops) [
       cop_behavior ; code as defined in the include-file "cops.nls"
@@ -219,8 +244,8 @@ to go
     if Source = "With Interface" [vid:record-interface] ; records the interface
   ]
 
-end ; - to go part
 
+end ; - to go part
 
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -308,7 +333,7 @@ num-cops
 num-cops
 0
 50
-8.0
+14.0
 1
 1
 NIL
@@ -410,6 +435,17 @@ _______________________________________
 11
 0.0
 1
+
+SWITCH
+119
+28
+262
+61
+show-intentions
+show-intentions
+0
+1
+-1000
 
 @#$#@#$#@
 ## WHAT IS IT?
