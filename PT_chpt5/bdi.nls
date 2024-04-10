@@ -19,6 +19,11 @@
 ;; of a specific list. Check list processing in NetLogo. However
 ;; here are some usefull procedures. 
 
+
+;;1) reactive behavior with subsumption:
+;;
+;;citizens walking to a destination, escaping from cops, prisoned
+
 ;;; creates a new belief. (does not stores it in belief memory).
 to-report create-belief [b-type content]
   if show-intentions [type b-type show content]
