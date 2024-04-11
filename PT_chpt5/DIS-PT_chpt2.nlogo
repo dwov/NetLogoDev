@@ -170,8 +170,8 @@ to setup
     set citizen-vision random 9 + 1
     set next-task [ -> walkaround ]
 
-    set beliefs []
     set intentions []
+    add-intention "walkaround" "always"
   ]
 
   ;---- setup cops
@@ -220,7 +220,6 @@ to go
     ; Reactive part based on the type of agent
     if (breed = citizens) [
       citizen_behavior
-      execute-intentions
       ]
     if (breed = cops) [
       cop_behavior ; code as defined in the include-file "cops.nls"
@@ -235,7 +234,15 @@ to go
 
 end ; - to go part
 
+to-report always
+  report false
+end
 
+to-report inprison
+  ifelse inPrison?
+  [ report false ]
+  [ report true ]
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
 549
@@ -432,7 +439,7 @@ SWITCH
 428
 show-intentions
 show-intentions
-1
+0
 1
 -1000
 

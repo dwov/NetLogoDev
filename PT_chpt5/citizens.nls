@@ -9,105 +9,68 @@
 
 
 to citizen_behavior
-         
-         ifelse steps > 0
-        [ set steps steps - 1 ]
-        [  
-         run next-task]  
+  ; Directly call execute-intentions, which handles intention execution logic
+  ;print (word "Citizen " who " current int.: " current-intention)
+  execute-intentions
 end
 
 
-to walkaround     
-  forward speed
-  let places neighborhood with [not any? cops-here and region != "prison"]
-    set inPrison?  false
-    set color green
-    if any? places [move-to one-of places]
-    
-  ifelse jailsentence > 0 [
-    set next-task [ -> go-to-prison]
+to walkaround
+  ifelse inPrison? [
+    ;nothing
   ]
-   [ let nearby-police other cops in-radius citizen-vision
-    if any? nearby-police    [ 
-     let police min-one-of nearby-police [distance myself]; identify the cop that is nearest
-     if police != nobody [  
-      set next-task [ -> see-police ]
-     ] 
+  [
+    forward speed
+    let places neighborhood with [not any? cops-here and region != "prison"]
+    if any? places [move-to one-of places]
+    ; Example of adding an intention when a condition is met
+    let nearby-police other cops in-radius citizen-vision
+    ifelse any? nearby-police [
+      add-intention "see-police" "true" ; The second arg is a condition to remove the intention
+    ] [
+      ;add-intention "walkaround" "false"
     ]
   ]
 end
 
 
 to see-police
-  ifelse jailsentence > 0 [
-    set next-task [ -> go-to-prison]
+  ; Let's say seeing a police triggers moving away from the nearest police
+  let nearest-police min-one-of (other cops in-radius citizen-vision) [distance myself]
+  if nearest-police != nobody [
+    face nearest-police
+    rt 180 ; Turn away from the police
+    fd 1 ; Move one step away
+    print (word "Citizen " who " avoids cop: " [who] of nearest-police)
+    ; After the action, the citizen reassesses their intentions
+    ; Here you might check conditions to remove this intention or add new ones
+    ; For simplicity, we just pop this intention off
+    ;pop-intention
+    ; Alternatively, use remove-intention if conditions are met
   ]
-  
- [ let nearby-police other cops in-radius citizen-vision 
-   let police min-one-of nearby-police [distance myself]; identify the cop that is nearest
-   if police != nobody [
-      print (word " citizen: " who " sees cop: " police)
-      set heading (towards police) + 180 ; face opposite from the nearest police    
-   ]     
-  set next-task [ -> walkaround ]
-  ]      
 end
 
 
 to go-to-prison
    move-to one-of patches with [not any? turtles-here and region = "prison"]
    set color red
-   set inPrison?  true
-   set jailtime jailtime + 1 ;counting the time in prison
+   set inPrison? true
+   set jailtime jailtime + 1 ; Start or continue counting the time in prison
    print (word "citizen " who " is in prison since: " jailtime)
-   if jailtime > jailsentence [    ; released from prison
+   
+   ; Check if the citizen's jail time exceeds their sentence, implying release
+   ifelse jailtime > jailsentence [
+    ; Reset jail-related variables upon release
     set jailtime 0
     set jailsentence 0
     let places neighborhood with [not any? cops-here and region != "prison"]
-    if any? places [move-to one-of places]
+    if any? places [move-to one-of places] ; Move the citizen out of prison
     set inPrison? false
-    set color yellow
+    set color yellow ; Change color to indicate the citizen is no longer imprisoned
     print (word "citizen " who " is released from prison")
-    set next-task [ -> walkaround ]
-    ]    
-end  
-
-  
-; checking if the citizen is in prison
-;ifelse inPrison? = true [
- ;;   set jailtime jailtime + 1 ;counting the time in prison
-  ;;  print (word "citizen " who "is in prison since: " jailtime)
-  ;;  if jailtime > jailsentence [; released from prison
-  ;;    set jailtime 0
-      ; move forward where there are no cops and is not prison
-   ;;   let places neighborhood with [not any? cops-here and region != "prison"]
-    ;;  if any? places [move-to one-of places]
-   ;   set inPrison? false
-  ;;    set color yellow
-   ;;   print (word "citizen " who "is released from prison")
-  ;  ]
-  ;]
-;  [;else checking if cops are within vision radius
-   ;; let nearby-police other cops in-radius citizen-vision
-   ;; if any? nearby-police [
-   ;;   let police min-one-of nearby-police [distance myself]; identify the cop that is nearest
-    ;;  if police != nobody [
-     ;;   print (word " citizen: " who " sees cop: " police)
-      ;;  set heading (towards police) + 180 ; face opposite from the nearest police
-    ;  ] 
-  ;  ]    
-    ; move forward where there are no cops and is not prison
-   ;; let places neighborhood with [not any? cops-here and region != "prison"]
-  ;;  if any? places [move-to one-of places]
- ; ]
-
-
-
-; if asked to go to prison  
-;to gotoprison 
-  ; set flag
- ; set inPrison? true
-  ;;set color red
-  ; move to prison into an own cell (=own patch)
- ;; move-to one-of patches with [not any? turtles-here and region = "prison"]
-;end
+    ; Instead of setting next-task, add an intention to resume normal behavior
+    ;add-intention "walkaround" "false"
+   ][
+    ;add-intention "go-to-prison" "true"
+  ]
+end
