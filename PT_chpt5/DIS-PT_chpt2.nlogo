@@ -112,6 +112,8 @@ citizens-own [
   steps
   next-task
   intentions
+  determined?
+  choice
 ]
 ;---- Specific, local variables of cop-agents
 cops-own [
@@ -155,13 +157,29 @@ to setup
   ]
   ask one-of resturantpatches [ set plabel "RESTAURANT"]
 
+  ;setup Expresso house
+  let expressoHousepatches patches with [pxcor > 30 and pxcor < 40 and pycor > 23 and pycor < 33]
+  ask expressoHousepatches [
+    set pcolor orange
+    set region "ExpressoHouse"
+  ]
+  ask one-of expressoHousepatches [set plabel "EXPRESSO HOUSE"]
+
+  ;setup University
+  let universitypatches patches with [pxcor > 30 and pxcor < 40 and pycor > 0 and pycor < 10]
+  ask universitypatches [
+    set pcolor sky
+    set region "University"
+  ]
+  ask one-of universitypatches [set plabel "UNIVERSITY"]
+
 
   ; setup citizen-agents
   create-citizens num-citizens [
     set label who
     set shape "person"
-        set intentions []
-    add-intention "walkaround" "false"
+    set intentions []
+   ; add-intention "walkaround" "false"
     set size 1.5
     set color green
     setxy random-xcor random-ycor
@@ -184,11 +202,9 @@ to setup
     set color blue
     set cop-speed random 3 + 1 ; make sure it cannot be 0
     move-to one-of patches with [ not any? turtles-here and region != "prison"]
-    set hunger random 30 + 3
+    set hunger random 60 + 3
     ;set inResturant? false
   ]
-
-
 
   ; must be last in the setup-part:
   reset-ticks
@@ -197,15 +213,7 @@ to setup
     if Source = "Only View" [vid:record-view] ; records the plane
     if Source = "With Interface" [vid:record-interface] ; records the interface
   ]
-
-
- ; ask turtles [
- ; add-intention "walkaround" "false"
-;  ]
-
 end
-
-
 
 
 
@@ -220,19 +228,15 @@ to go
   ;
   tick ;- update time
 
-   ask turtles [
-
-  ]
-
   ask turtles [
     ; Reactive part based on the type of agent
     if (breed = citizens) [
-      ;citizen_behavior
-      execute-intentions
 
-
-
+     ; execute-intentions
+     citizen_behavior
       ]
+
+
     if (breed = cops) [
       cop_behavior ; code as defined in the include-file "cops.nls"
       ]
@@ -262,8 +266,8 @@ GRAPHICS-WINDOW
 1
 1
 0
-1
-1
+0
+0
 1
 0
 66
@@ -273,7 +277,7 @@ GRAPHICS-WINDOW
 0
 1
 ticks
-30.0
+60.0
 
 SLIDER
 23
@@ -284,7 +288,7 @@ num-citizens
 num-citizens
 1
 30
-17.0
+5.0
 1
 1
 NIL
@@ -333,7 +337,7 @@ num-cops
 num-cops
 0
 50
-14.0
+8.0
 1
 1
 NIL
