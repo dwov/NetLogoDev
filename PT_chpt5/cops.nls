@@ -18,17 +18,24 @@ to cop_behavior
         print (word " cop-agent: " who " puts suspect: " suspect " to prison!")
         ask suspect [
       set jailsentence random max-jailterm]
-      ;go-to-prison
+     ; go-to-prison]
         
     ]
-    [; else look for citizens and move towards them
+    [
+    ; else look for citizens and move towards them
      set suspect one-of other citizens with [inPrison? = false] in-radius cop-vision
      if suspect != nobody [
         print (word " cop-agent: " who " sees suspect: " suspect)
-        face suspect  
-    ]
-    forward cop-speed ; move forward towards suspect
+      face suspect  
+    
+    if [region] of patch-ahead 1 = "prison" [
+       set heading (towards suspect) + 180 
+      ]
+     ; move forward towards suspect
+   
+  ]forward cop-speed;forward cop-speedforward cop-speed
   ]
+  
   ifelse hunger < 3 [
     gotoresturant
   ]

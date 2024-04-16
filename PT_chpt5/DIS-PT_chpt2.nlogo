@@ -83,13 +83,13 @@ globals [
   max-jailterm
   resturant-region
   patch-steps
+
  ; next-task
 ]
 
 ;---- General agent variables
 turtles-own [
   beliefs
-  intentions
   ;next-task
  ; steps
 ]
@@ -110,6 +110,12 @@ citizens-own [
   speed
   steps
   next-task
+
+  intentions
+  choice
+  determined? ;Är på väg eller inte
+  decided?
+  study
 ]
 ;---- Specific, local variables of cop-agents
 cops-own [
@@ -145,12 +151,30 @@ to setup
     ask one-of prisonpatches [set plabel "PRISON"]
 
   ;setup resturant
-  let resturantpatches patches with [pxcor > 55 and pxcor < 65 and pycor > 20 and pycor < 30]
+  let resturantpatches patches with [pxcor > 55 and pxcor < 65 and pycor > 0 and pycor < 8]
   ask resturantpatches [
     set pcolor brown
     set region "restaurant"
   ]
   ask one-of resturantpatches [ set plabel "RESTAURANT"]
+
+
+    ;setup university
+  let universitypatches patches with [pxcor > 55 and pxcor < 65 and pycor > 20 and pycor < 30]
+  ask universitypatches [
+    set pcolor yellow
+    set region "university"
+  ]
+  ask one-of universitypatches [ set plabel "UNIVERSITY"]
+
+    ;setup Expressohouse
+  let expressopatches patches with [pxcor > 25 and pxcor < 32 and pycor > 0 and pycor < 6]
+  ask expressopatches [
+    set pcolor red
+    set region "expresso"
+  ]
+  ask one-of expressopatches [ set plabel "EXPRESSO HOUSE"]
+
 
 
   ; setup citizen-agents
@@ -164,11 +188,18 @@ to setup
     move-to one-of patches with [ not any? turtles-here and region != "prison"]
     ; setting specific variables for citizen
     set inPrison? false
+    set determined? false
+    set decided? false
     set jailtime 0
     set jailsentence 0
     set speed random 5 + 1 ; make sure it cannot be 0
     set citizen-vision random 9 + 1
-    set next-task [ -> walkaround ]
+    set intentions []
+    ;add-intention "walkaround" "true"
+
+     ;  add-intention "walkaround" false
+    ;   add-intention "go-to-prison" false
+    set next-task [ -> citizen_behavior ]
   ]
 
   ;---- setup cops
@@ -180,9 +211,7 @@ to setup
     set cop-speed random 3 + 1 ; make sure it cannot be 0
     move-to one-of patches with [ not any? turtles-here and region != "prison"]
     set hunger random 30 + 3
-    add-intention "see-police" false
-       add-intention "see-police" false
-       add-intention "see-police" false
+
     ;set inResturant? false
   ]
 
@@ -210,7 +239,6 @@ to go
   ask turtles [
     ; Reactive part based on the type of agent
     if (breed = citizens) [
-
        citizen_behavior
       ]
     if (breed = cops) [
@@ -225,14 +253,12 @@ to go
   ]
 
 end ; - to go part
-
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 549
 10
 1731
-614
+615
 -1
 -1
 17.5224
@@ -242,8 +268,8 @@ GRAPHICS-WINDOW
 1
 1
 0
-1
-1
+0
+0
 1
 0
 66
@@ -264,7 +290,7 @@ num-citizens
 num-citizens
 1
 30
-17.0
+22.0
 1
 1
 NIL
@@ -313,7 +339,7 @@ num-cops
 num-cops
 0
 50
-8.0
+5.0
 1
 1
 NIL
@@ -423,7 +449,7 @@ SWITCH
 380
 show-intentions
 show-intentions
-1
+0
 1
 -1000
 
@@ -643,6 +669,24 @@ Polygon -7500403 true true 105 90 120 195 90 285 105 300 135 300 150 225 165 300
 Rectangle -7500403 true true 127 79 172 94
 Polygon -7500403 true true 195 90 240 150 225 180 165 105
 Polygon -7500403 true true 105 90 60 150 75 180 135 105
+
+person graduate
+false
+0
+Circle -16777216 false false 39 183 20
+Polygon -1 true false 50 203 85 213 118 227 119 207 89 204 52 185
+Circle -7500403 true true 110 5 80
+Rectangle -7500403 true true 127 79 172 94
+Polygon -8630108 true false 90 19 150 37 210 19 195 4 105 4
+Polygon -8630108 true false 120 90 105 90 60 195 90 210 120 165 90 285 105 300 195 300 210 285 180 165 210 210 240 195 195 90
+Polygon -1184463 true false 135 90 120 90 150 135 180 90 165 90 150 105
+Line -2674135 false 195 90 150 135
+Line -2674135 false 105 90 150 135
+Polygon -1 true false 135 90 150 105 165 90
+Circle -1 true false 104 205 20
+Circle -1 true false 41 184 20
+Circle -16777216 false false 106 206 18
+Line -2674135 false 208 22 208 57
 
 person police
 false

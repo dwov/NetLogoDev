@@ -1,51 +1,107 @@
-; File with the "to-go"- functionality of citizen-agents
 
-; FILE HISTORY:
-
-; 2024-01-29 Initial template, gks
-; 
-;
-;---------------------------------------------------
-;to citizen_behavior
-  ;execute-intentions
-       
-;end
-
-
-
-to citizen_behavior ;DETTA ÄR TILL STATE MACHINEN YO d
+;to citizen_behavior ;DETTA ÄR TILL STATE MACHINEN YO d
 ;         
-         ifelse steps > 0
-        [ set steps steps - 1 ]
-        [  
-        run next-task]  
+        ; ifelse steps > 0
+       ; [ set steps steps - 1 ]
+      ;  [  
+       ; run next-task]  
+;end
+to update-belief2
+  
+   let nearby-police other cops in-radius citizen-vision
+    if any? nearby-police     
+    [ let police min-one-of nearby-police [distance myself]; identify the cop that is nearest
+     if police != nobody [  
+      add-intention "see-police" "true"
+     ] 
+  ]
+      
+  if jailsentence > 0 [
+    add-intention "go-to-prison" "true"
+  ]
+  
+  
 end
 
 
+to citizen_behavior 
+  
+    ;ifelse decided? = false [ 
+     update-belief2
+    ifelse empty? intentions [
+     ifelse determined? = true [ 
+      run choice ] 
+     [ choose-direction ]
+    ]
+    [ execute-intentions ] ; KÖR REACTIVE GREJEN
+end
+
+to choose-direction ;state 0
+  
+  set choice random(2)
+  ifelse choice = 0 
+  [ set determined? true
+    set choice  [  -> go-to-expresso ]
+    go-to-expresso ]
+   [ set determined? true
+    set choice  [  -> go-to-university ]
+    set study 5
+    go-to-university
+  ]
+end  
+
+to go-to-expresso ; state 1
+  let expresso one-of patches with [ region = "expresso" ]
+  set heading towards expresso 
+  forward speed
+  set color white
+  if patch-here = expresso [
+  show (word "DRINKING SOME COFFEE") 
+  set determined? false
+  ]
+  set next-task [ -> citizen_behavior ]
+
+end
+
+to go-to-university ; state 2
+   let university one-of patches with [ region = "university" ]
+   set heading towards university
+   forward speed
+   if patch-here = university [
+  show (word "JUST STUDYING A BIT ") 
+    set shape "person graduate"  
+    set determined? false
+    set study study - 1    
+  ]
+    
+    set next-task [ -> citizen_behavior ]
+ 
+end  
+
 to walkaround     
   forward speed
-  let places neighborhood with [not any? cops-here and region != "prison"]
+  let places neighborhood with [not any? cops-here and region != "prison" and region != "expresso" and region != "university" and region != "restaurant"]
     set inPrison?  false
     set color green
     if any? places [move-to one-of places]
     
-  ifelse jailsentence > 0 [
-    set next-task [ -> go-to-prison]
-  ]
-   [ let nearby-police other cops in-radius citizen-vision
-    if any? nearby-police    [ 
-     let police min-one-of nearby-police [distance myself]; identify the cop that is nearest
-     if police != nobody [  
-      set next-task [ -> see-police ]
-     ] 
-    ]
-  ]
+ ; ifelse jailsentence > 0 [
+ ;   add-intention "go-to-prison" "true"
+ ; ]
+  ; [ let nearby-police other cops in-radius citizen-vision
+  ;  if any? nearby-police    [ 
+   ;  let police min-one-of nearby-police [distance myself]; identify the cop that is nearest
+   ;  if police != nobody [  
+      ;add-intention "see-police" "true"
+    ; ] 
+   ; ]
+  ;]
 end
 
 
 to see-police
   ifelse jailsentence > 0 [
-    set next-task [ -> go-to-prison]
+    add-intention "go-to-prison" "true"
   ]
   
  [ let nearby-police other cops in-radius citizen-vision 
@@ -53,8 +109,9 @@ to see-police
    if police != nobody [
       print (word " citizen: " who " sees cop: " police)
       set heading (towards police) + 180 ; face opposite from the nearest police    
+     ; face police
    ]     
-  set next-task [ -> walkaround ]
+  ;add-intention "walkaround" "true"
   ]      
 end
 
@@ -65,15 +122,16 @@ to go-to-prison
    set inPrison?  true
    set jailtime jailtime + 1 ;counting the time in prison
    print (word "citizen " who " is in prison since: " jailtime)
-   if jailtime > jailsentence [    ; released from prison
+   ifelse jailtime > jailsentence [    ; released from prison
     set jailtime 0
     set jailsentence 0
-    let places neighborhood with [not any? cops-here and region != "prison"]
-    if any? places [move-to one-of places]
+   ; let places neighborhood with [not any? cops-here and region != "prison"]
+   ; if any? places [move-to one-of places]
     set inPrison? false
     set color yellow
     print (word "citizen " who " is released from prison")
-    set next-task [ -> walkaround ]
-    ]    
+    add-intention "walkaround" "true" 
+    ]
+  
+  [add-intention "go-to-prison" "true"]
 end  
-
