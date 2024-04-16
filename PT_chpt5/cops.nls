@@ -36,10 +36,10 @@ to cop_behavior
   ]forward cop-speed;forward cop-speedforward cop-speed
   ]
   
-  ifelse hunger < 3 [
-    gotoresturant
-  ]
-  [set hunger hunger - 1]
+ ; ifelse hunger < 3 [
+ ;   gotoresturant
+ ; ]
+ ; [set hunger hunger - 1]
 end
 
 to gotoresturant

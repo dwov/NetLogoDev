@@ -160,7 +160,7 @@ to setup
 
 
     ;setup university
-  let universitypatches patches with [pxcor >= 41 and pxcor <= 55 and pycor >= 23 and pycor <= 28]
+  let universitypatches patches with [pxcor >= 41 and pxcor <= 55 and pycor >= 25 and pycor <= 3]
   ask universitypatches [
     set pcolor yellow
     set region "university"
