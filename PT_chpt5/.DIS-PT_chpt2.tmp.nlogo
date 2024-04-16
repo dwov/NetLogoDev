@@ -109,7 +109,7 @@ citizens-own [
   jailsentence
   speed
   steps
-  next-task
+  next-state
 
   intentions
   choice
@@ -160,7 +160,7 @@ to setup
 
 
     ;setup university
-  let universitypatches patches with [pxcor >= 41 and pxcor <= 55 and pycor >= 25 and pycor <= 3]
+  let universitypatches patches with [pxcor >= 41 and pxcor <= 55 and pycor >= 23 and pycor <= 28]
   ask universitypatches [
     set pcolor yellow
     set region "university"
@@ -195,11 +195,7 @@ to setup
     set speed random 5 + 1 ; make sure it cannot be 0
     set citizen-vision random 9 + 1
     set intentions []
-    ;add-intention "walkaround" "true"
-
-     ;  add-intention "walkaround" false
-    ;   add-intention "go-to-prison" false
-    set next-task [ -> citizen_behavior ]
+    set next-state [  ]
   ]
 
   ;---- setup cops
