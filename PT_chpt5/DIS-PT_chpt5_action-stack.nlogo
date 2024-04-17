@@ -151,7 +151,7 @@ to setup
     ask one-of prisonpatches [set plabel "PRISON"]
 
   ;setup resturant
-  let resturantpatches patches with [pxcor > 55 and pxcor < 65 and pycor > 20 and pycor < 30]
+  let resturantpatches patches with [pxcor > 40 and pxcor < 50 and pycor > 5 and pycor < 15]
   ask resturantpatches [
     set pcolor brown
     set region "restaurant"
@@ -167,7 +167,7 @@ to setup
   ask one-of universitypatches [ set plabel "UNIVERSITY"]
 
   ;setup expresso
-  let expressopatches patches with [pxcor > 40 and pxcor < 45 and pycor > 27 and pycor < 32]
+  let expressopatches patches with [pxcor > 35 and pxcor < 40 and pycor > 27 and pycor < 32]
   ask expressopatches [
     set pcolor sky
     set region "expresso"
