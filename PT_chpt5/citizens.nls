@@ -14,7 +14,7 @@ to citizen_behavior
   ;execute-intentions
   
   update-beliefs
-  if (final-destination != current-destination) [
+  if not arrived [
     add-intention "walkaround" "true"
   ]
   if (any? nearby-police) [
@@ -32,29 +32,37 @@ to citizen_behavior
   ]
   
   execute-intentions
+  set intentions []
 
 end
 
 
 to update-beliefs
-  ;update vision and so on.
+  ; Update vision and so on.
   set nearby-police other cops in-radius citizen-vision
-  if patch-here = one-of patches with [region = final-destination]
-  [ set current-destination final-destination ]
-  
+
+  ; Check if the turtle's current patch is the patch designated as its final destination.
+  ifelse patch-here = final-destination
+  [ set arrived true ]
+  [ set arrived false ]
+  print (word "region " patch-here)
 end
 
 
 to proactive-behaviour
-  ;todo
   print (word "Citizen " who " proactive")
-  if current-destination = final-destination
-  [ if final-destination = "university"
-    [ set final-destination "expresso" ]
-    if final-destination = "expresso"
-    [ set final-destination "university" ]
+  if arrived [
+    if final-destination = one-of patches with [region = "university"] [
+      set final-destination one-of patches with [region = "expresso"]
+    ]
+    if final-destination = one-of patches with [region = "expresso"] [ ; The else ensures that it only switches to university if it's not currently university.
+      set final-destination one-of patches with [region = "university"]
+    ]
+    set arrived false  ; Reset arrived status after changing destination.
+    print (word "New final-destination: " final-destination) ; Debugging line to see the change.
   ]
 end
+
 
 
 to walkaround
@@ -62,15 +70,14 @@ to walkaround
     ;nothing
   ]
   [
+    ifelse distance final-destination <= speed
+    [ move-to final-destination ]
+    [ 
     set heading towards final-destination
-    forward speed
+    forward speed * 0.8
     let places neighborhood with [not any? cops-here and region != "prison"]
     if any? places [move-to one-of places]
-    ; Example of adding an intention when a condition is met
-    ;let nearby-police other cops in-radius citizen-vision
-    ;ifelse any? nearby-police [
-    ;  add-intention "see-police" "true" ; The second arg is a condition to remove the intention
-    ;]
+    ]
   ]
 end
 
