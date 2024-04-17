@@ -11,7 +11,49 @@
 to citizen_behavior
   ; Directly call execute-intentions, which handles intention execution logic
   ;print (word "Citizen " who " current int.: " current-intention)
+  ;execute-intentions
+  
+  update-beliefs
+  if (final-destination != current-destination) [
+    add-intention "walkaround" "true"
+  ]
+  if (any? nearby-police) [
+    add-intention "see-police" "true"
+  ]
+  if (going-to-prison) [
+    add-intention "go-to-prison" "true"
+  ]
+  
+
+  ifelse (empty? intentions) [
+    proactive-behaviour
+  ] [
+    ;pop-intention
+  ]
+  
   execute-intentions
+
+end
+
+
+to update-beliefs
+  ;update vision and so on.
+  set nearby-police other cops in-radius citizen-vision
+  if patch-here = one-of patches with [region = final-destination]
+  [ set current-destination final-destination ]
+  
+end
+
+
+to proactive-behaviour
+  ;todo
+  print (word "Citizen " who " proactive")
+  if current-destination = final-destination
+  [ if final-destination = "university"
+    [ set final-destination "expresso" ]
+    if final-destination = "expresso"
+    [ set final-destination "university" ]
+  ]
 end
 
 
@@ -20,16 +62,15 @@ to walkaround
     ;nothing
   ]
   [
+    set heading towards final-destination
     forward speed
     let places neighborhood with [not any? cops-here and region != "prison"]
     if any? places [move-to one-of places]
     ; Example of adding an intention when a condition is met
-    let nearby-police other cops in-radius citizen-vision
-    ifelse any? nearby-police [
-      add-intention "see-police" "true" ; The second arg is a condition to remove the intention
-    ] [
-      ;add-intention "walkaround" "false"
-    ]
+    ;let nearby-police other cops in-radius citizen-vision
+    ;ifelse any? nearby-police [
+    ;  add-intention "see-police" "true" ; The second arg is a condition to remove the intention
+    ;]
   ]
 end
 
@@ -39,14 +80,9 @@ to see-police
   let nearest-police min-one-of (other cops in-radius citizen-vision) [distance myself]
   if nearest-police != nobody [
     face nearest-police
-    rt 180 ; Turn away from the police
-    fd 1 ; Move one step away
+    rt 180  ; Turn away from the police
+    forward speed  ; Move one step away
     print (word "Citizen " who " avoids cop: " [who] of nearest-police)
-    ; After the action, the citizen reassesses their intentions
-    ; Here you might check conditions to remove this intention or add new ones
-    ; For simplicity, we just pop this intention off
-    ;pop-intention
-    ; Alternatively, use remove-intention if conditions are met
   ]
 end
 
@@ -70,7 +106,9 @@ to go-to-prison
     print (word "citizen " who " is released from prison")
     ; Instead of setting next-task, add an intention to resume normal behavior
     ;add-intention "walkaround" "false"
+    set going-to-prison false
    ][
     ;add-intention "go-to-prison" "true"
+    
   ]
 end

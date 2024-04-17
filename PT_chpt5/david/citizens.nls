@@ -1,0 +1,129 @@
+; File with the "to-go"- functionality of citizen-agents
+
+; FILE HISTORY:
+
+; 2024-01-29 Initial template, gks
+; 
+;
+;---------------------------------------------------
+
+
+to citizen_behavior
+  ; Update beliefs
+  
+  ; Reactive = intention stack
+  if not arrived [ walkaround ]
+  if seeing-police [ see-police ]
+  if jailsentence > 0 [ go-to-prison ]
+  ;----------
+  ; Proactive = state machine
+
+end
+
+to update-beliefs
+  ifelse patch-here = final-destination
+  [ set arrived true ]
+  [ set arrived false ]
+  
+  let nearby-police other cops in-radius citizen-vision
+  ifelse any? nearby-police
+  [ set seeing-police true ]
+  [ set seeing-police false ]
+  
+end
+
+
+to walkaround     
+  forward speed
+  let places neighborhood with [not any? cops-here and region != "prison"]
+    set inPrison?  false
+    set color green
+    if any? places [move-to one-of places]
+    
+  ifelse jailsentence > 0 [
+    set next-task [ -> go-to-prison]
+  ]
+   [ let nearby-police other cops in-radius citizen-vision
+    if any? nearby-police    [ 
+     let police min-one-of nearby-police [distance myself]; identify the cop that is nearest
+     if police != nobody [  
+      set next-task [ -> see-police ]
+     ] 
+    ]
+  ]
+end
+
+
+to see-police
+  ifelse jailsentence > 0 [
+    set next-task [ -> go-to-prison]
+  ]
+  
+ [ let nearby-police other cops in-radius citizen-vision 
+   let police min-one-of nearby-police [distance myself]; identify the cop that is nearest
+   if police != nobody [
+      print (word " citizen: " who " sees cop: " police)
+      set heading (towards police) + 180 ; face opposite from the nearest police    
+   ]     
+  set next-task [ -> walkaround ]
+  ]      
+end
+
+
+to go-to-prison
+   move-to one-of patches with [not any? turtles-here and region = "prison"]
+   set color red
+   set inPrison?  true
+   set jailtime jailtime + 1 ;counting the time in prison
+   print (word "citizen " who " is in prison since: " jailtime)
+   if jailtime > jailsentence [    ; released from prison
+    set jailtime 0
+    set jailsentence 0
+    let places neighborhood with [not any? cops-here and region != "prison"]
+    if any? places [move-to one-of places]
+    set inPrison? false
+    set color yellow
+    print (word "citizen " who " is released from prison")
+    set next-task [ -> walkaround ]
+    ]    
+end  
+
+  
+; checking if the citizen is in prison
+;ifelse inPrison? = true [
+ ;;   set jailtime jailtime + 1 ;counting the time in prison
+  ;;  print (word "citizen " who "is in prison since: " jailtime)
+  ;;  if jailtime > jailsentence [; released from prison
+  ;;    set jailtime 0
+      ; move forward where there are no cops and is not prison
+   ;;   let places neighborhood with [not any? cops-here and region != "prison"]
+    ;;  if any? places [move-to one-of places]
+   ;   set inPrison? false
+  ;;    set color yellow
+   ;;   print (word "citizen " who "is released from prison")
+  ;  ]
+  ;]
+;  [;else checking if cops are within vision radius
+   ;; let nearby-police other cops in-radius citizen-vision
+   ;; if any? nearby-police [
+   ;;   let police min-one-of nearby-police [distance myself]; identify the cop that is nearest
+    ;;  if police != nobody [
+     ;;   print (word " citizen: " who " sees cop: " police)
+      ;;  set heading (towards police) + 180 ; face opposite from the nearest police
+    ;  ] 
+  ;  ]    
+    ; move forward where there are no cops and is not prison
+   ;; let places neighborhood with [not any? cops-here and region != "prison"]
+  ;;  if any? places [move-to one-of places]
+ ; ]
+
+
+
+; if asked to go to prison  
+;to gotoprison 
+  ; set flag
+ ; set inPrison? true
+  ;;set color red
+  ; move to prison into an own cell (=own patch)
+ ;; move-to one-of patches with [not any? turtles-here and region = "prison"]
+;end

@@ -111,10 +111,10 @@ citizens-own [
   intentions
   beliefs
 
+  arrived
+  seeing-police
+
   final-destination
-  current-destination
-  nearby-police
-  going-to-prison
 ]
 ;---- Specific, local variables of cop-agents
 cops-own [
@@ -166,7 +166,7 @@ to setup
   ask one-of universitypatches [ set plabel "UNIVERSITY"]
 
   ;setup expresso
-  let expressopatches patches with [pxcor > 20 and pxcor < 25 and pycor > 27 and pycor < 32]
+  let expressopatches patches with [pxcor > 30 and pxcor < 35 and pycor > 27 and pycor < 32]
   ask expressopatches [
     set pcolor sky
     set region "expresso"
@@ -192,10 +192,9 @@ to setup
     set next-task [ -> walkaround ]
 
     set intentions []
-    ;add-intention "walkaround" "always"
-    set going-to-prison false
-    set final-destination one-of patches with [region = "expresso"]
-    set current-destination false
+    set arrived false
+    set seeing-police false
+    set final-destination one-of patches = "expresso"
   ]
 
   ;---- setup cops
@@ -233,6 +232,10 @@ to go
   ;
   tick ;- update time
 
+
+ ; ask turtles [
+    ;if (breed = cops and hunger <= 3) [gotoresturant]]
+
   ;---- Agents to-go part -------------
   ; Cyclic execution of what the agents are supposed to do
   ;
@@ -240,29 +243,21 @@ to go
     ; Reactive part based on the type of agent
     if (breed = citizens) [
       citizen_behavior
-    ]
+      ]
     if (breed = cops) [
       cop_behavior ; code as defined in the include-file "cops.nls"
-    ]
+      ]
   ]
 
   ;recorder
-  if vid:recorder-status = "recording" [
+ if vid:recorder-status = "recording" [
     if Source = "Only View" [vid:record-view] ; records the plane
     if Source = "With Interface" [vid:record-interface] ; records the interface
   ]
 
 end ; - to go part
 
-to-report always
-  report false
-end
 
-to-report inprison
-  ifelse inPrison?
-  [ report false ]
-  [ report true ]
-end
 @#$#@#$#@
 GRAPHICS-WINDOW
 549
@@ -278,8 +273,8 @@ GRAPHICS-WINDOW
 1
 1
 0
-0
-0
+1
+1
 1
 0
 66
@@ -453,10 +448,10 @@ _______________________________________
 1
 
 SWITCH
-153
-395
-296
-428
+157
+396
+293
+429
 show-intentions
 show-intentions
 0

@@ -125,7 +125,7 @@ to-report intention-done [intention]
   report item 1 intention
 end 
 
-to pop-intention
+to pop-intention 
   set intentions but-first intentions
 end
 
