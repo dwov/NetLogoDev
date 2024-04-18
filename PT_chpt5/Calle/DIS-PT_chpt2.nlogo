@@ -62,6 +62,7 @@ __includes [
     "citizens.nls"
     "cops.nls"
     "vid.nls" ; contains the code for the recorder. You also need to activate the vid-extension and the command at the end of setup
+    "bdi.nls"
 ]
 ; ********************end included files ********
 
@@ -83,12 +84,15 @@ globals [
   resturant-region
   patch-steps
  ; next-task
+
 ]
 
 ;---- General agent variables
 turtles-own [
   ;next-task
  ; steps
+  beliefs
+
 ]
 
 ;---- Specific, local variables of patches
@@ -107,6 +111,9 @@ citizens-own [
   speed
   steps
   next-task
+  intentions
+  determined?
+  choice
 ]
 ;---- Specific, local variables of cop-agents
 cops-own [
@@ -115,6 +122,7 @@ cops-own [
   hunger
   ;inResturant?
 ]
+
 
 
 ; ******************* SETUP PART *****************
@@ -149,11 +157,29 @@ to setup
   ]
   ask one-of resturantpatches [ set plabel "RESTAURANT"]
 
+  ;setup Expresso house
+  let expressoHousepatches patches with [pxcor > 30 and pxcor < 40 and pycor > 23 and pycor < 33]
+  ask expressoHousepatches [
+    set pcolor orange
+    set region "ExpressoHouse"
+  ]
+  ask one-of expressoHousepatches [set plabel "EXPRESSO HOUSE"]
+
+  ;setup University
+  let universitypatches patches with [pxcor > 30 and pxcor < 40 and pycor > 0 and pycor < 10]
+  ask universitypatches [
+    set pcolor sky
+    set region "University"
+  ]
+  ask one-of universitypatches [set plabel "UNIVERSITY"]
+
 
   ; setup citizen-agents
   create-citizens num-citizens [
     set label who
     set shape "person"
+    set intentions []
+   ; add-intention "walkaround" "false"
     set size 1.5
     set color green
     setxy random-xcor random-ycor
@@ -176,11 +202,9 @@ to setup
     set color blue
     set cop-speed random 3 + 1 ; make sure it cannot be 0
     move-to one-of patches with [ not any? turtles-here and region != "prison"]
-    set hunger random 30 + 3
+    set hunger random 60 + 3
     ;set inResturant? false
   ]
-
-
 
   ; must be last in the setup-part:
   reset-ticks
@@ -189,8 +213,9 @@ to setup
     if Source = "Only View" [vid:record-view] ; records the plane
     if Source = "With Interface" [vid:record-interface] ; records the interface
   ]
-
 end
+
+
 
 ; **************************end setup part *******
 
@@ -206,8 +231,12 @@ to go
   ask turtles [
     ; Reactive part based on the type of agent
     if (breed = citizens) [
-      citizen_behavior
+
+     ; execute-intentions
+     citizen_behavior
       ]
+
+
     if (breed = cops) [
       cop_behavior ; code as defined in the include-file "cops.nls"
       ]
@@ -219,8 +248,8 @@ to go
     if Source = "With Interface" [vid:record-interface] ; records the interface
   ]
 
-end ; - to go part
 
+end ; - to go part
 
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -248,7 +277,7 @@ GRAPHICS-WINDOW
 0
 1
 ticks
-30.0
+60.0
 
 SLIDER
 23
@@ -259,7 +288,7 @@ num-citizens
 num-citizens
 1
 30
-17.0
+8.0
 1
 1
 NIL
@@ -410,6 +439,17 @@ _______________________________________
 11
 0.0
 1
+
+SWITCH
+119
+28
+262
+61
+show-intentions
+show-intentions
+0
+1
+-1000
 
 @#$#@#$#@
 ## WHAT IS IT?
