@@ -266,8 +266,8 @@ GRAPHICS-WINDOW
 1
 1
 0
-0
-0
+1
+1
 1
 0
 66
@@ -288,7 +288,7 @@ num-citizens
 num-citizens
 1
 30
-5.0
+8.0
 1
 1
 NIL

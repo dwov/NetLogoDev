@@ -9,15 +9,12 @@
 
 
 to citizen_behavior
-         
+    update_beliefs     
   
  ; if not member? "go-to-prison" intentions [
     ifelse empty? intentions [
-    let nearby-police other cops in-radius citizen-vision
-    if any? nearby-police [see-police]
-    if jailsentence > 0 [go-to-prison]
      ifelse determined? = true [ 
-      run choice ]   ;CHOSE DIRECTION
+      run choice ]   ;CHOOSE DIRECTION
    ; if police != nobody [execute-intentions]
     
     [ choose-direction ]
@@ -34,35 +31,35 @@ to choose-direction ;state 0
     go-to-expresso ]
    [ set determined? true
     set choice  [  -> go-to-university ]
-    go-to-university
-  ]
+    go-to-university ]
+  
 end
 
 to go-to-expresso ; state 1
-  show (word "WENT TO EXPRESSO")
+  show (word "WALKING TO EXPRESSO HOUSE")
   let ExpressoHouse one-of patches with [ region = "ExpressoHouse" ]
   set heading towards ExpressoHouse 
   forward speed
   if patch-here = ExpressoHouse [
-  show (word "DRINKING SOME COFFEE") 
+  show (word "ARRIVED, DRINKING SOME COFFEE") 
   set determined? false
   ]
-  set next-task [ -> citizen_behavior ]
+ ; set next-task [ -> citizen_behavior ]
 end
   
   to go-to-university ; state 2
-    show (word "WENT TO UNIVERSITY")
+    show (word "WALKING TO UNIVERSITY")
    let University one-of patches with [ region = "University" ]
    set heading towards University
    forward speed
    if patch-here = University [
-  show (word "JUST STUDYING A BIT ") 
+  show (word "ARRIVED, JUST STUDYING A BIT ") 
   set determined? false
   ]
-  set next-task [ -> citizen_behavior ]
+;  set next-task [ -> citizen_behavior ]
  
 end
-  
+
   
 to walkaround     
   forward speed
@@ -86,21 +83,23 @@ end
 
 
 to see-police
-  ifelse jailsentence > 0 [
-    add-intention "go-to-prison" "true"
-  ]
+ ; ifelse jailsentence > 0 [
+   ; add-intention "go-to-prison" "true"
+  ;]
   
- [ let nearby-police other cops in-radius citizen-vision 
+  let nearby-police other cops in-radius citizen-vision 
    let police min-one-of nearby-police [distance myself]; identify the cop that is nearest
    if police != nobody [
       print (word " citizen: " who " sees cop: " police)
-      face police
-      ;set heading (towards police) + 180 ; face opposite from the nearest police    
-   ]
+   ;   face police
+    
+      set heading (towards police) + 180 ; face opposite from the nearest police    
+    forward speed
+  ]
  ; if jailsentence > 0 [
   ;    add-intention "go-to-prison" "true" ]
    ;   ifelse jailsentence <= 0 [ 
-      add-intention "walkaround" "true" ]
+    ;  add-intention "walkaround" "true" ]
         
 end
 
@@ -117,14 +116,20 @@ to go-to-prison
     let places neighborhood with [not any? cops-here and region != "prison"]
     if any? places [move-to one-of places]
     set inPrison? false
-    set color yellow
+    set color green
     print (word "citizen " who " is released from prison")
-    add-intention "walkaround" "true"
+    
+   ; add-intention "walkaround" "true"
     ]    
       
 end  
 
   
+to update_beliefs
+      if jailsentence > 0 [add-intention "go-to-prison" "true"]
+      let nearby-police other cops in-radius citizen-vision
+  if any? nearby-police [add-intention "see-police" "true"]
+end
 ; checking if the citizen is in prison
 ;ifelse inPrison? = true [
  ;;   set jailtime jailtime + 1 ;counting the time in prison
