@@ -93,7 +93,15 @@ to execute-intentions
   run intention-name myInt
   if runresult intention-done myInt [remove-intention myInt]
   ;if show-intentions [set label intentions] ;; Just for debugging. 
-end 
+end
+
+
+to-report intention-done? [myInt]
+  ; Example reporter logic
+  ; Replace this with your actual logic for checking if the intention's goal is achieved
+  report not any? cops in-radius citizen-vision
+end
+
 
 ;;;; Intentions Structure Access Functions
 ;; returns the current intention of the agent
@@ -117,7 +125,7 @@ to-report intention-done [intention]
   report item 1 intention
 end 
 
-to pop-intention 
+to pop-intention
   set intentions but-first intentions
 end
 
