@@ -38,12 +38,11 @@ to go-to-expresso ; state 1
   forward speed
   set color white
   ifelse patch-here = expresso [
-    show (word "DRINKING SOME COFFEE") 
-    set determined? false
+    show (word "DRINKING SOME COFFEE")     
     set next-state [ -> choose-direction]
   ]
-    [set next-state [ -> go-to-expresso]
-    ]   
+  [set next-state [ -> go-to-expresso]
+  ]   
 end
 
 
@@ -54,8 +53,7 @@ to go-to-university ; state 2
    set color green
    ifelse patch-here = university [
      show (word "JUST STUDYING A BIT ") 
-     ;set shape "person graduate"  
-     set determined? false
+     ;set shape "person graduate"       
      set next-state [ -> choose-direction]       
    ]
    [set next-state [ -> go-to-university]

@@ -113,8 +113,6 @@ citizens-own [
 
   intentions
   choice
-  determined? ;Är på väg eller inte
-  decided?
   study
 ]
 ;---- Specific, local variables of cop-agents
@@ -160,7 +158,7 @@ to setup
 
 
     ;setup university
-  let universitypatches patches with [pxcor >= 41 and pxcor <= 55 and pycor >= 23 and pycor <= 28]
+  let universitypatches patches with [pxcor >= 41 and pxcor <= 55 and pycor >= 20 and pycor <= 25]
   ask universitypatches [
     set pcolor yellow
     set region "university"
@@ -168,7 +166,7 @@ to setup
   ask one-of universitypatches [ set plabel "UNIVERSITY"]
 
     ;setup Expressohouse
-  let expressopatches patches with [pxcor >= 34 and pxcor <= 41 and pycor >= 1 and pycor <= 6]
+  let expressopatches patches with [pxcor >= 34 and pxcor <= 41 and pycor >= 3 and pycor <= 6]
   ask expressopatches [
     set pcolor red
     set region "expresso"
@@ -188,8 +186,7 @@ to setup
     move-to one-of patches with [ not any? turtles-here and region != "prison"]
     ; setting specific variables for citizen
     set inPrison? false
-    set determined? false
-    set decided? false
+
     set jailtime 0
     set jailsentence 0
     set speed random 5 + 1 ; make sure it cannot be 0
@@ -286,7 +283,7 @@ num-citizens
 num-citizens
 1
 30
-22.0
+6.0
 1
 1
 NIL
@@ -335,7 +332,7 @@ num-cops
 num-cops
 0
 50
-11.0
+5.0
 1
 1
 NIL
