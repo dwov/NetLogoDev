@@ -1,0 +1,125 @@
+
+to update-belief2  
+  ifelse jailsentence > 0 [
+    add-intention "go-to-prison" "true"
+  ]  
+  [let nearby-police other cops in-radius citizen-vision
+    if any? nearby-police[       
+      add-intention "see-police" "true"
+    ] 
+  ]    
+end
+
+
+to citizen_behavior    
+  update-belief2  
+  ifelse empty? intentions [
+    state-machine ]
+  [ execute-intentions ]     
+end
+
+
+to state-machine  
+  run next-state  
+end
+
+
+to choose-direction ;state 0  
+  set choice random(2)
+  ifelse choice = 0 [
+    go-to-expresso ]   
+  [ go-to-university ]    
+end 
+
+
+to go-to-expresso ; state 1  
+  let expresso one-of patches with [ region = "expresso" ]
+  set heading towards expresso 
+  forward speed
+  set color white
+  ifelse patch-here = expresso [
+    show (word "DRINKING SOME COFFEE")     
+    set next-state [ -> choose-direction]
+  ]
+  [set next-state [ -> go-to-expresso]
+  ]   
+end
+
+
+to go-to-university ; state 2  
+   let university one-of patches with [ region = "university" ]
+   set heading towards university
+   forward speed
+   set color green
+   ifelse patch-here = university [
+     show (word "JUST STUDYING A BIT ") 
+     ;set shape "person graduate"       
+     set next-state [ -> choose-direction]       
+   ]
+   [set next-state [ -> go-to-university]
+   ]     
+end  
+
+
+to see-police  
+   let nearby-police other cops in-radius citizen-vision 
+   let police min-one-of nearby-police [distance myself]; identify the cop that is nearest
+   if police != nobody [
+      print (word " citizen: " who " sees cop: " police)
+      set heading (towards police) + 180 ; face opposite from the nearest police  
+      forward speed  
+      set color yellow
+   ]            
+end
+
+
+to go-to-prison  
+   move-to one-of patches with [not any? turtles-here and region = "prison"]
+   set color red
+   set inPrison?  true
+   set jailtime jailtime + 1 ;counting the time in prison
+   print (word "citizen " who " is in prison since: " jailtime)
+   if jailtime > jailsentence [    ; released from prison
+    set jailtime 0
+    set jailsentence 0
+    set inPrison? false
+    set color green
+    print (word "citizen " who " is released from prison")   
+    let places neighborhood with [not any? cops-here and region != "prison" and region != "expresso" and region != "university" and region != "restaurant"]
+    if any? places [move-to one-of places]
+   ]  
+end 
+
+
+
+
+
+;to walkaround     
+;  forward speed
+ ; let places neighborhood with [not any? cops-here and region != "prison" and region != "expresso" and region != "university" and region != "restaurant"]
+  ;  set inPrison?  false
+  ;  set color green
+   ; if any? places [move-to one-of places]
+    
+ ; ifelse jailsentence > 0 [
+ ;   add-intention "go-to-prison" "true"
+ ; ]
+  ; [ let nearby-police other cops in-radius citizen-vision
+  ;  if any? nearby-police    [ 
+   ;  let police min-one-of nearby-police [distance myself]; identify the cop that is nearest
+   ;  if police != nobody [  
+      ;add-intention "see-police" "true"
+    ; ] 
+   ; ]
+  ;]
+;end
+
+
+;to citizen_behavior ;DETTA ÄR TILL STATE MACHINEN YO d
+;         
+        ; ifelse steps > 0
+       ; [ set steps steps - 1 ]
+      ;  [  
+       ; run next-task]  
+;end
+
