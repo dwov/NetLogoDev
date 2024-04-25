@@ -1,3 +1,11 @@
+;Update of the agent variables for: pArrest, C, A, fear, frust, anger, risk as described in
+
+;section 4.3.1, 4.4.1 and 5.2 of the ODD Project description.
+
+
+
+
+
 ; File with the "to-go"- functionality of citizen-agents
 
 ; FILE HISTORY:
@@ -87,6 +95,9 @@ to setup-citizens
     set destinationxy []
     set walkdesire? false
     set counter 0 ; all-purpose counter
+    set k  3.03
+    set Risk random-float 1.0
+
   ]
 
 end
@@ -106,8 +117,13 @@ let hidingplaces neighborhood with [not any? cops-here and region = "empty" or r
 ;--- save local position
 set localxy patch-here
   
+set pArrest 1 - exp((- k * C) / (A + 1))  
+;print (word "pArrest: " pArrest)
+  
 ;---test purpose
 ;set destinationxy one-of patches with [region = "Restaurant"]
+  
+ 
 
     
     
@@ -129,6 +145,20 @@ set localxy patch-here
   
   
 end
+
+
+to updatePArrest
+  
+set pArrest 1 - exp((- k * C) / (A + 1))  
+  
+end
+
+to updateRisk
+  set Risk random-float 1.0
+    
+end
+
+
 
 ;"""""""""""""""""" Intentions """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -217,8 +247,8 @@ to proactiveBehavior
   ;
   
   ; For testing
-  set proState item (random 8) StateList
-  if Debug [print (word who "deliberated proState = " proState)]
+ ; set proState item (random 8) StateList
+  ;if Debug [print (word who "deliberated proState = " proState)]
   
   
   ; "Finite State Machine" 
