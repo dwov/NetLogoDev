@@ -79,10 +79,11 @@ breed [cops cop] ;
 
 globals [
 
-  max-jailterm
+  ;max-jailterm
   resturant-region
   patch-steps
  ; next-task
+  highest_num_prisoners
 ]
 
 ;---- General agent variables
@@ -122,8 +123,9 @@ cops-own [
 to setup
   clear-all
   ; define global variables that are not set as sliders
-  set max-jailterm 50
- set patch-steps 5
+  ;set max-jailterm 50
+  set patch-steps 5
+  set highest_num_prisoners 0
 
   ; setup of the environment:
   ; setup of all patches
@@ -174,7 +176,7 @@ to setup
     set shape "person police"
     set size 2
     set color blue
-    set cop-speed random 3 + 1 ; make sure it cannot be 0
+    set cop-speed random 5 + 1 ; make sure it cannot be 0
     move-to one-of patches with [ not any? turtles-here and region != "prison"]
     set hunger random 30 + 3
     ;set inResturant? false
@@ -203,6 +205,7 @@ to go
   ;
   tick ;- update time
 
+
   ask turtles [
     ; Reactive part based on the type of agent
     if (breed = citizens) [
@@ -212,6 +215,7 @@ to go
       cop_behavior ; code as defined in the include-file "cops.nls"
       ]
   ]
+  if (highest_num_prisoners < count citizens with [inPrison?]) [set highest_num_prisoners (count citizens with [inPrison?])]
 
   ;recorder
  if vid:recorder-status = "recording" [
@@ -219,8 +223,8 @@ to go
     if Source = "With Interface" [vid:record-interface] ; records the interface
   ]
 
+  if ticks = 1000 [stop]
 end ; - to go part
-
 
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -259,7 +263,7 @@ num-citizens
 num-citizens
 1
 30
-17.0
+10.0
 1
 1
 NIL
@@ -268,7 +272,7 @@ HORIZONTAL
 BUTTON
 22
 24
-85
+113
 57
 setup
 setup
@@ -285,7 +289,7 @@ NIL
 BUTTON
 21
 73
-84
+114
 106
 go
 go
@@ -308,7 +312,7 @@ num-cops
 num-cops
 0
 50
-8.0
+50.0
 1
 1
 NIL
@@ -410,6 +414,90 @@ _______________________________________
 11
 0.0
 1
+
+MONITOR
+21
+183
+132
+228
+Agents in prison
+count citizens with [inPrison?]
+17
+1
+11
+
+MONITOR
+21
+130
+132
+175
+Citizens roaming
+count citizens with [not inPrison?]
+17
+1
+11
+
+PLOT
+141
+24
+540
+174
+Average Hunger
+time
+hunger
+0.0
+1000.0
+0.0
+33.0
+false
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot mean [hunger] of cops"
+
+SLIDER
+23
+357
+247
+390
+max-jailterm
+max-jailterm
+0
+100
+100.0
+1
+1
+NIL
+HORIZONTAL
+
+PLOT
+140
+183
+540
+333
+Agents in prison over time
+time
+agents
+0.0
+1000.0
+0.0
+10.0
+false
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot count citizens with [inPrison?]"
+
+MONITOR
+22
+236
+132
+281
+Max prisoners
+highest_num_prisoners
+17
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
